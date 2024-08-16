@@ -1,4 +1,4 @@
-import { RootState } from '@/src/core/rtk/store';
+import { CACHE_PATH } from '@/src/core/constant/constant';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import * as FileSystem from 'expo-file-system';
 
@@ -18,7 +18,7 @@ export const fetchImage = createAsyncThunk<string, string>(
   'images/fetchImage',
   async (url) => {
     try {
-      const path = `${FileSystem.cacheDirectory}${url.split('/').pop()}`
+      const path = `${CACHE_PATH}${url.split('/').pop()}`
       const imageExists = await FileSystem.getInfoAsync(path);
 
       if (imageExists.exists) { 
@@ -43,7 +43,8 @@ const imagesSlice = createSlice({
       })
       .addCase(fetchImage.fulfilled, (state,  action: PayloadAction<string, string, { arg: string }>) => {
         state.status = 'succeeded';
-        state.images[action.meta.arg] = action.payload;
+        const id = action.meta.arg.split("/").pop() as string
+        state.images[id] = action.payload.split("/").pop() as string;
       })
       .addCase(fetchImage.rejected, (state, action) => {
         state.status = 'failed';
@@ -53,4 +54,3 @@ const imagesSlice = createSlice({
 });
 
 export default imagesSlice.reducer;
-export const selectImageByURL = (state: RootState, url: string) => state.images.images[url];

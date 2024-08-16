@@ -1,19 +1,18 @@
 import { View, StyleSheet, FlatList, useWindowDimensions } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import Search from "@/src/core/components/search";
-import { BASE_URL, CARD_WIDTH } from "@/src/core/constant/constant";
-import { rootStyle } from "@/src/core/styles/styles";
-import { IParamsType } from "./types";
+import { BASE_URL, CARD_WIDTH, PADDING_H } from "@/src/core/constant/constant";
+import { IParamsType, LayoutGallery } from "../types";
 import Card from "@/src/core/components/Card";
 import LoadingMore from "@/src/core/components/LoadingMore";
 
 let page = 1;
-const totalPages = 10;
 const limit = 10;
 
 export default function Gallery() {
   const [data, setData] = useState<IParamsType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
   const { width: WIDTH } = useWindowDimensions();
   const TOTAL_COL = Math.floor(WIDTH / CARD_WIDTH + 0.8);
 
@@ -31,7 +30,7 @@ export default function Gallery() {
   const handleScrollEnd = () => {
     setIsLoading(true);
     page = page + 1;
-    if (!isLoading && totalPages >= page) {
+    if (!isLoading) {
       fetchData();
     }
   };
@@ -40,10 +39,7 @@ export default function Gallery() {
   const keyExtractor = (item: IParamsType, index: number) => {
     return `${item.id}-${index}`;
   };
-  const getItemLayout = (
-    data: ArrayLike<IParamsType> | null | undefined,
-    index: number
-  ) => {
+  const getItemLayout = (data: LayoutGallery, index: number) => {
     return {
       length: CARD_WIDTH,
       offset: CARD_WIDTH * index,
@@ -52,8 +48,7 @@ export default function Gallery() {
   };
 
   return (
-    <View style={rootStyle.container}>
-      <Search />
+    <View style={styles.container}>
       <FlatList
         contentContainerStyle={styles.cardContainer}
         data={data}
@@ -64,14 +59,10 @@ export default function Gallery() {
         onEndReached={handleScrollEnd}
         getItemLayout={getItemLayout}
         maxToRenderPerBatch={10}
-        windowSize={5}
-        initialNumToRender={20}
+        windowSize={2}
+        initialNumToRender={15}
         removeClippedSubviews={true}
-        ListFooterComponent={
-          isLoading && page <= totalPages && data.length >= 0 ? (
-            <LoadingMore />
-          ) : null
-        }
+        ListFooterComponent={isLoading ? <LoadingMore /> : null}
         renderItem={renderItem}
       />
     </View>
@@ -79,6 +70,10 @@ export default function Gallery() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: PADDING_H,
+    flex: 1,
+  },
   cardContainer: {
     rowGap: 10,
     paddingBottom: CARD_WIDTH + 30,

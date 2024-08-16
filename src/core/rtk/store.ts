@@ -1,13 +1,11 @@
-import { api } from './api';
 import { configureStore } from '@reduxjs/toolkit';
-import imageReducer from '@/src/features/gallery/imageSlice'
+import imageReducer from '@/src/features/gallery/slice/cacheImageSlice'
 export const store = configureStore({
   reducer: {
     images: imageReducer,
-    [api.reducerPath]: api.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware),
+    getDefaultMiddleware(),
   devTools: process.env.NODE_ENV !== 'production',
 });
 

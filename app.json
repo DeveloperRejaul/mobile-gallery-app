@@ -23,15 +23,15 @@
       "package": "com.rejaul.mobilegalleryapp"
     },
     "web": {
-      "bundler": "metro",
-      "output": "static",
       "favicon": "./src/core/assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+       [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ]
+    ]
   }
 }
