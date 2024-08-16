@@ -1,4 +1,4 @@
-import { View, StyleSheet, FlatList } from "react-native";
+import { View, StyleSheet, FlatList, useWindowDimensions } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import Search from "@/src/core/components/search";
 import { BASE_URL, CARD_WIDTH } from "@/src/core/constant/constant";
@@ -13,6 +13,8 @@ let totalPages = 10;
 export default function Gallery() {
   const [data, setData] = useState<IParamsType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { width: WIDTH } = useWindowDimensions();
+  const TOTAL_COL = Math.floor(WIDTH / CARD_WIDTH + 0.8);
 
   const fetchData = useCallback(async () => {
     const res = await fetch(`${BASE_URL}/photos?_page=${page}&_limit=${10}`);
@@ -54,7 +56,7 @@ export default function Gallery() {
       <FlatList
         contentContainerStyle={styles.cardContainer}
         data={data}
-        numColumns={2}
+        numColumns={TOTAL_COL}
         showsVerticalScrollIndicator={false}
         columnWrapperStyle={{ columnGap: 8 }}
         keyExtractor={keyExtractor}
