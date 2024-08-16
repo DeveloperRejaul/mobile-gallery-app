@@ -8,7 +8,8 @@ import Card from "@/src/core/components/Card";
 import LoadingMore from "@/src/core/components/LoadingMore";
 
 let page = 1;
-let totalPages = 10;
+const totalPages = 10;
+const limit = 10;
 
 export default function Gallery() {
   const [data, setData] = useState<IParamsType[]>([]);
@@ -17,7 +18,7 @@ export default function Gallery() {
   const TOTAL_COL = Math.floor(WIDTH / CARD_WIDTH + 0.8);
 
   const fetchData = useCallback(async () => {
-    const res = await fetch(`${BASE_URL}/photos?_page=${page}&_limit=${10}`);
+    const res = await fetch(`${BASE_URL}/photos?_page=${page}&_limit=${limit}`);
     const result = await res.json();
     setData((pre) => [...pre, ...result]);
     setIsLoading(false);
@@ -67,7 +68,9 @@ export default function Gallery() {
         initialNumToRender={20}
         removeClippedSubviews={true}
         ListFooterComponent={
-          isLoading && data.length >= 0 ? <LoadingMore /> : null
+          isLoading && page <= totalPages && data.length >= 0 ? (
+            <LoadingMore />
+          ) : null
         }
         renderItem={renderItem}
       />

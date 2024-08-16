@@ -4,8 +4,9 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "npx expo start -c",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "prebuild": "npx expo prebuild",
+    "android": "npx expo run:android",
+    "ios": "npx expo run:ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint"
