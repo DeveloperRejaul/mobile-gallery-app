@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
-import { Image } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/src/core/rtk/store";
 import { fetchImage } from "@/src/features/gallery/slice/cacheImageSlice";
-import { Skeleton } from "moti/skeleton";
 import { checkEqual, checkEqualString } from "@/src/core/utils/redux";
 import Error from "./Error";
 import { CACHE_PATH } from "../constant/constant";
+import Loading from "./Loading";
 interface ImageViewerProps {
   imageUrl: string;
 }
-const ImageViewer = ({ imageUrl }: ImageViewerProps) => {
+export default function ImageViewer({ imageUrl }: ImageViewerProps) {
   const dispatch = useDispatch<AppDispatch>();
   const urlId = imageUrl.split("/").pop() as string;
   const imageUri = useSelector(
@@ -37,24 +37,12 @@ const ImageViewer = ({ imageUrl }: ImageViewerProps) => {
   if (status === "failed") return <Error error={error} />;
 
   return imageUri ? (
-    <Image
-      source={{ uri: CACHE_PATH + imageUri }}
-      style={{ width: "100%", height: "100%", resizeMode: "cover" }}
-    />
+    <Image source={{ uri: CACHE_PATH + imageUri }} style={styles.img} />
   ) : (
     <Loading />
   );
-};
-
-function Loading() {
-  return (
-    <Skeleton
-      show={true}
-      colorMode="light"
-      radius="square"
-      height="100%"
-      width="100%"
-    />
-  );
 }
-export default ImageViewer;
+
+const styles = StyleSheet.create({
+  img: { width: "100%", height: "100%", resizeMode: "cover" },
+});

@@ -18,7 +18,10 @@ export default memo((props: IAlbumItemProps) => {
           <Text style={styles.text}>Total Photos: {props.total}</Text>
           <Text style={styles.text}>Album Id: {props.albumId}</Text>
         </View>
-        <CheckBall isActive={props.isActive} />
+        <CheckBall
+          isActive={props.isActive}
+          onPress={(isChecked) => props.onPress(props.albumId, isChecked)}
+        />
       </View>
     </TouchableOpacity>
   );

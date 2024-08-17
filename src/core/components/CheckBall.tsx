@@ -4,15 +4,17 @@ import { useState } from "react";
 
 interface CheckBallProps {
   isActive?: boolean;
-  onPress?: () => void;
+  onPress?: (value: boolean) => void;
 }
 
 export default function CheckBall(props: CheckBallProps) {
   const [isChecked, setIsChecked] = useState(false);
 
   const handlePress = () => {
-    setIsChecked((pre) => !pre);
-    props.onPress?.();
+    setIsChecked((pre) => {
+      props.onPress?.(!pre);
+      return !pre;
+    });
   };
 
   return (

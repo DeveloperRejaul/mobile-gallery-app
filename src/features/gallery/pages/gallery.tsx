@@ -1,16 +1,23 @@
 import { View, StyleSheet, FlatList, useWindowDimensions } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { BASE_URL, CARD_WIDTH, PADDING_H } from "@/src/core/constant/constant";
-import { IParamsType, LayoutGallery } from "../types";
+import { IAppPhotosRenterProps, IParamsType, LayoutGallery } from "../types";
 import Card from "@/src/core/components/Card";
 import LoadingMore from "@/src/core/components/LoadingMore";
+import BottomBar from "@/src/core/components/BottomBar";
+import { useDeletePhotosWithIdMutation } from "@/src/core/rtk/api";
 
 let page = 1;
 const limit = 10;
 
+const selectData: number[] = [];
+
 export default function Gallery() {
   const [data, setData] = useState<IParamsType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLongPress, setIsLongPress] = useState(false);
+  const [deletePhoto] = useDeletePhotosWithIdMutation();
+
   const [isError, setIsError] = useState(false);
 
   const { width: WIDTH } = useWindowDimensions();
@@ -30,12 +37,31 @@ export default function Gallery() {
   const handleScrollEnd = () => {
     setIsLoading(true);
     page = page + 1;
-    if (!isLoading) {
-      fetchData();
-    }
+    if (!isLoading) fetchData();
   };
 
-  const renderItem = ({ item }: { item: IParamsType }) => <Card {...item} />;
+  const handlePress = (id: number, isChecked: boolean) => {
+    if (isChecked) return selectData.push(id);
+    const index = selectData.findIndex((arId) => arId === id);
+    if (index || index === 0) selectData.splice(index, 1);
+  };
+
+  const handleDelete = () => {
+    setData((pre) => pre.filter((item) => !selectData.includes(item.id)));
+    selectData.forEach((id) => deletePhoto(selectData[id]));
+    selectData.splice(0, selectData.length);
+    setIsLongPress(false);
+  };
+
+  const renderItem = ({ item }: IAppPhotosRenterProps) => (
+    <Card
+      onLongPress={() => setIsLongPress((pre) => !pre)}
+      isActive={isLongPress}
+      onPress={handlePress}
+      {...item}
+    />
+  );
+
   const keyExtractor = (item: IParamsType, index: number) => {
     return `${item.id}-${index}`;
   };
@@ -48,24 +74,27 @@ export default function Gallery() {
   };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        contentContainerStyle={styles.cardContainer}
-        data={data}
-        numColumns={TOTAL_COL}
-        showsVerticalScrollIndicator={false}
-        columnWrapperStyle={{ columnGap: 8 }}
-        keyExtractor={keyExtractor}
-        onEndReached={handleScrollEnd}
-        getItemLayout={getItemLayout}
-        maxToRenderPerBatch={10}
-        windowSize={2}
-        initialNumToRender={15}
-        removeClippedSubviews={true}
-        ListFooterComponent={isLoading ? <LoadingMore /> : null}
-        renderItem={renderItem}
-      />
-    </View>
+    <>
+      <View style={styles.container}>
+        <FlatList
+          contentContainerStyle={styles.cardContainer}
+          data={data}
+          numColumns={TOTAL_COL}
+          showsVerticalScrollIndicator={false}
+          columnWrapperStyle={{ columnGap: 8 }}
+          keyExtractor={keyExtractor}
+          onEndReached={handleScrollEnd}
+          getItemLayout={getItemLayout}
+          maxToRenderPerBatch={10}
+          windowSize={2}
+          initialNumToRender={15}
+          removeClippedSubviews={true}
+          ListFooterComponent={isLoading ? <LoadingMore /> : null}
+          renderItem={renderItem}
+        />
+      </View>
+      <BottomBar isActive={isLongPress} onDelete={handleDelete} />
+    </>
   );
 }
 

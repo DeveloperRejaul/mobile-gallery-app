@@ -14,6 +14,7 @@ export default function StackNav() {
         component={Details}
         options={{
           animationEnabled: true,
+          gestureEnabled: true,
           gestureDirection: "horizontal",
           transitionSpec: {
             open: {
@@ -53,6 +54,7 @@ export default function StackNav() {
         options={{
           animationEnabled: true,
           gestureDirection: "vertical",
+          gestureEnabled: true,
           cardStyleInterpolator: ({ current, layouts }) => {
             return {
               cardStyle: {
