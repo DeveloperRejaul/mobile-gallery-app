@@ -84,7 +84,10 @@ export default function Gallery() {
   // handle search operation
   const titleSearch = (photo: IParamsType) => {
     if (searchText && searchType === "photos") {
-      return photo.title.toLowerCase().includes(searchText);
+      return (
+        photo.title.toLowerCase().includes(searchText) ||
+        photo.albumId.toString().toLowerCase().includes(searchText)
+      );
     } else {
       return true;
     }
