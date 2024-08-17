@@ -1,6 +1,6 @@
-import { View, FlatList, StyleSheet, useWindowDimensions } from "react-native";
+import { View, FlatList, useWindowDimensions } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { BASE_URL, CARD_WIDTH, PADDING_H } from "@/src/core/constant/constant";
+import { BASE_URL, CARD_WIDTH } from "@/src/core/constant/constant";
 import type {
   IAlbumProps,
   IAlbumRenterProps,
@@ -8,20 +8,29 @@ import type {
   LayoutAlbum,
 } from "@/src/features/gallery/types";
 import AlbumCard from "@/src/core/components/AlbumCard";
-import { formatAlbum } from "@/src/core/utils/utils";
 import BottomBar from "@/src/core/components/BottomBar";
 import { useDeletePhotosWithAlbumsIdMutation } from "@/src/core/rtk/api";
+import { styles } from "@/src/features/gallery/styles";
+import { addAlbum, removeAlbum } from "@/src/features/gallery/slice/album";
+import { useAppDispatch, useAppSelector } from "@/src/core/hooks/redux";
+import { checkEqual } from "@/src/core/utils/redux";
+import { formatAlbum } from "@/src/core/utils/utils";
 
 const albums: IAlbumProps[] = [];
-const albumsSelectData: number[] = [];
 const limit = 10;
 let fastIndex = 0;
 let lastIndex = limit;
+const albumsSelectData: number[] = [];
 
 export default function Album() {
-  const [data, setData] = useState<IAlbumProps[]>([]);
   const [isLongPress, setIsLongPress] = useState(false);
   const [deleteAlbum] = useDeletePhotosWithAlbumsIdMutation();
+  const dispatch = useAppDispatch();
+  const data = useAppSelector((state) => state.album.album, checkEqual);
+
+  const isSearching = useAppSelector((state) => state.search.isSearching);
+  const searchText = useAppSelector((state) => state.search.text);
+  const searchType = useAppSelector((state) => state.search.type);
 
   const { width: WIDTH } = useWindowDimensions();
   const TOTAL_COL = Math.floor(WIDTH / CARD_WIDTH + 0.8);
@@ -31,7 +40,7 @@ export default function Album() {
       const res = await fetch(`${BASE_URL}/photos`);
       const result = (await res.json()) as IParamsType[];
       albums.push(...formatAlbum(result));
-      setData(albums.slice(fastIndex, lastIndex));
+      dispatch(addAlbum(albums.slice(fastIndex, lastIndex)));
     })();
   }, []);
 
@@ -41,16 +50,13 @@ export default function Album() {
     if (index || index === 0) albumsSelectData.splice(index, 1);
   }, []);
 
-  const renderItem = useCallback(
-    ({ item }: IAlbumRenterProps) => (
-      <AlbumCard
-        {...item}
-        onLongPress={() => setIsLongPress((pre) => !pre)}
-        isActive={isLongPress}
-        onPress={handleAlbumSelect}
-      />
-    ),
-    [isLongPress]
+  const renderItem = ({ item }: IAlbumRenterProps) => (
+    <AlbumCard
+      {...item}
+      onLongPress={() => setIsLongPress((pre) => !pre)}
+      isActive={isLongPress}
+      onPress={handleAlbumSelect}
+    />
   );
 
   const keyExtractor = (item: IAlbumProps, index: number) => {
@@ -66,28 +72,36 @@ export default function Album() {
   };
 
   const handleScrollEnd = () => {
-    if (lastIndex <= albums.length) {
+    if (lastIndex <= albums.length && !isSearching) {
       fastIndex = lastIndex;
       lastIndex += limit;
-      setData((pre) => [...pre, ...albums.slice(fastIndex, lastIndex)]);
+      dispatch(addAlbum(albums.slice(fastIndex, lastIndex)));
     }
   };
 
   const handleDelete = () => {
-    setData((pre) => {
-      return pre.filter((item) => !albumsSelectData.includes(item.albumId));
-    });
+    dispatch(removeAlbum(albumsSelectData));
     albumsSelectData.forEach((id) => deleteAlbum(albumsSelectData[id]));
     albumsSelectData.splice(0, albumsSelectData.length);
     setIsLongPress(false);
   };
+
+  // handle search operation
+  const titleSearch = (item: IAlbumProps) => {
+    if (searchText && searchType === "album") {
+      return item.albumId.toString().toLowerCase().includes(searchText);
+    } else {
+      return true;
+    }
+  };
+  const newData = data.filter(titleSearch);
 
   return (
     <>
       <View style={styles.container}>
         <FlatList
           contentContainerStyle={styles.cardContainer}
-          data={data}
+          data={newData}
           numColumns={TOTAL_COL}
           showsVerticalScrollIndicator={false}
           columnWrapperStyle={{ columnGap: 8 }}
@@ -105,14 +119,3 @@ export default function Album() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: PADDING_H,
-    flex: 1,
-  },
-  cardContainer: {
-    rowGap: 10,
-    paddingBottom: CARD_WIDTH + 30,
-  },
-});

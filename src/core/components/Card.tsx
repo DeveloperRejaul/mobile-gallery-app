@@ -7,8 +7,11 @@ import { Skeleton } from "moti/skeleton";
 import { memo } from "react";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { StackScreenType } from "../navigation/types";
-import { checkEqual } from "@/src/core/utils/redux";
 import CheckBall from "./CheckBall";
+
+const checkProps = (pre: IAllPhotosProps, next: IAllPhotosProps) => {
+  return pre.thumbnailUrl === next.thumbnailUrl;
+};
 
 export default memo((props: IAllPhotosProps) => {
   const { id, thumbnailUrl, albumId, title, url } = props;
@@ -48,7 +51,7 @@ export default memo((props: IAllPhotosProps) => {
       </Skeleton>
     </TouchableOpacity>
   );
-}, checkEqual);
+}, checkProps);
 
 const styles = StyleSheet.create({
   card: {

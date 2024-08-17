@@ -32,4 +32,10 @@ export interface IAlbumItemProps extends IAlbumProps {
 }
 
 export  type LayoutAlbum = ArrayLike<IAlbumProps> | null | undefined;
-export  type LayoutGallery = ArrayLike<IParamsType> | null | undefined;
+export type LayoutGallery = ArrayLike<IParamsType> | null | undefined;
+
+export interface ImagesState {
+  images: Record<string, string>;
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  error: string | null;
+}

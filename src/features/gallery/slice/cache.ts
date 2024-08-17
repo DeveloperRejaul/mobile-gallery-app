@@ -1,12 +1,9 @@
 import { CACHE_PATH } from '@/src/core/constant/constant';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import * as FileSystem from 'expo-file-system';
+import { ImagesState } from '@/src/features/gallery/types';
 
-interface ImagesState {
-  images: Record<string, string>;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error: string | null;
-}
+
 const initialState: ImagesState = {
   images: {},
   status: 'idle',

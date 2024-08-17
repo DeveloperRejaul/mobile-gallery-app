@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Image, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/src/core/rtk/store";
-import { fetchImage } from "@/src/features/gallery/slice/cacheImageSlice";
+import { fetchImage } from "@/src/features/gallery/slice/cache";
 import { checkEqual, checkEqualString } from "@/src/core/utils/redux";
 import Error from "./Error";
 import { CACHE_PATH } from "../constant/constant";

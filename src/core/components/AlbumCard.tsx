@@ -5,7 +5,10 @@ import ImageViewer from "./ImageViewer";
 import { CARD_WIDTH } from "@/src/core/constant/constant";
 import { colors } from "@/src/core/constant/colors";
 import CheckBall from "./CheckBall";
-import { checkEqual } from "@/src/core/utils/redux";
+
+const checkProps = (pre: IAlbumItemProps, next: IAlbumItemProps) => {
+  return pre.albumId === next.albumId;
+};
 
 export default memo((props: IAlbumItemProps) => {
   return (
@@ -25,7 +28,7 @@ export default memo((props: IAlbumItemProps) => {
       </View>
     </TouchableOpacity>
   );
-}, checkEqual);
+}, checkProps);
 
 const styles = StyleSheet.create({
   imgBody: {

@@ -1,7 +1,6 @@
 import Details from "@/src/features/gallery/pages/details";
 import { createStackNavigator } from "@react-navigation/stack";
 import TopTabs from "./TopTab";
-import Search from "@/src/features/search/search";
 import { Easing } from "react-native";
 const Stack = createStackNavigator();
 
@@ -40,29 +39,6 @@ export default function StackNav() {
                     translateX: current.progress.interpolate({
                       inputRange: [0, 1],
                       outputRange: [layouts.screen.width, 0],
-                    }),
-                  },
-                ],
-              },
-            };
-          },
-        }}
-      />
-      <Stack.Screen
-        name="search"
-        component={Search}
-        options={{
-          animationEnabled: true,
-          gestureDirection: "vertical",
-          gestureEnabled: true,
-          cardStyleInterpolator: ({ current, layouts }) => {
-            return {
-              cardStyle: {
-                transform: [
-                  {
-                    translateY: current.progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [layouts.screen.height, 0],
                     }),
                   },
                 ],

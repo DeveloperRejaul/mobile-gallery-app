@@ -1,10 +1,10 @@
-import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { Text, useWindowDimensions, View } from "react-native";
 import React from "react";
 import { PADDING_H } from "@/src/core/constant/constant";
 import Header from "@/src/core/components/Header";
-import { colors } from "@/src/core/constant/colors";
 import { upperFastChar } from "@/src/core/utils/string";
 import ImageViewer from "@/src/core/components/ImageViewer";
+import { styles } from "@/src/features/gallery/styles";
 
 export default function Details(props: any) {
   const { width: WIDTH } = useWindowDimensions();
@@ -12,7 +12,7 @@ export default function Details(props: any) {
   const params = props.route.params;
 
   return (
-    <View style={styles.container}>
+    <View style={styles.containerDetails}>
       <Header text="Details" onPress={() => props.navigation.goBack()} />
       <View style={styles.content}>
         <View>
@@ -29,30 +29,3 @@ export default function Details(props: any) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: 30,
-    paddingHorizontal: PADDING_H,
-    flex: 1,
-  },
-  content: {
-    justifyContent: "center",
-    flex: 1,
-    rowGap: 30,
-    marginTop: -50,
-  },
-  imgBody: {
-    overflow: "hidden",
-    borderRadius: 10,
-  },
-  img: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  text: {
-    fontSize: 20,
-    color: colors.dark[900],
-  },
-});

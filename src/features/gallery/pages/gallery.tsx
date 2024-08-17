@@ -1,11 +1,15 @@
-import { View, StyleSheet, FlatList, useWindowDimensions } from "react-native";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { BASE_URL, CARD_WIDTH, PADDING_H } from "@/src/core/constant/constant";
+import { View, FlatList, useWindowDimensions } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { BASE_URL, CARD_WIDTH } from "@/src/core/constant/constant";
 import { IAppPhotosRenterProps, IParamsType, LayoutGallery } from "../types";
 import Card from "@/src/core/components/Card";
 import LoadingMore from "@/src/core/components/LoadingMore";
 import BottomBar from "@/src/core/components/BottomBar";
 import { useDeletePhotosWithIdMutation } from "@/src/core/rtk/api";
+import { styles } from "@/src/features/gallery/styles";
+import { useAppDispatch, useAppSelector } from "@/src/core/hooks/redux";
+import { checkEqual } from "@/src/core/utils/redux";
+import { addPhotos, removePhotos } from "@/src/features/gallery/slice/photos";
 
 let page = 1;
 const limit = 10;
@@ -13,12 +17,16 @@ const limit = 10;
 const selectData: number[] = [];
 
 export default function Gallery() {
-  const [data, setData] = useState<IParamsType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLongPress, setIsLongPress] = useState(false);
   const [deletePhoto] = useDeletePhotosWithIdMutation();
+  const data = useAppSelector((state) => state.photos.photos, checkEqual);
 
-  const [isError, setIsError] = useState(false);
+  const isSearching = useAppSelector((state) => state.search.isSearching);
+  const searchText = useAppSelector((state) => state.search.text);
+  const searchType = useAppSelector((state) => state.search.type);
+
+  const dispatch = useAppDispatch();
 
   const { width: WIDTH } = useWindowDimensions();
   const TOTAL_COL = Math.floor(WIDTH / CARD_WIDTH + 0.8);
@@ -26,7 +34,7 @@ export default function Gallery() {
   const fetchData = useCallback(async () => {
     const res = await fetch(`${BASE_URL}/photos?_page=${page}&_limit=${limit}`);
     const result = await res.json();
-    setData((pre) => [...pre, ...result]);
+    dispatch(addPhotos(result));
     setIsLoading(false);
   }, []);
 
@@ -37,7 +45,7 @@ export default function Gallery() {
   const handleScrollEnd = () => {
     setIsLoading(true);
     page = page + 1;
-    if (!isLoading) fetchData();
+    if (!isLoading && !isSearching) fetchData();
   };
 
   const handlePress = (id: number, isChecked: boolean) => {
@@ -47,7 +55,7 @@ export default function Gallery() {
   };
 
   const handleDelete = () => {
-    setData((pre) => pre.filter((item) => !selectData.includes(item.id)));
+    dispatch(removePhotos(selectData));
     selectData.forEach((id) => deletePhoto(selectData[id]));
     selectData.splice(0, selectData.length);
     setIsLongPress(false);
@@ -73,12 +81,22 @@ export default function Gallery() {
     };
   };
 
+  // handle search operation
+  const titleSearch = (photo: IParamsType) => {
+    if (searchText && searchType === "photos") {
+      return photo.title.toLowerCase().includes(searchText);
+    } else {
+      return true;
+    }
+  };
+  const newData = data.filter(titleSearch);
+
   return (
     <>
       <View style={styles.container}>
         <FlatList
           contentContainerStyle={styles.cardContainer}
-          data={data}
+          data={newData}
           numColumns={TOTAL_COL}
           showsVerticalScrollIndicator={false}
           columnWrapperStyle={{ columnGap: 8 }}
@@ -97,14 +115,3 @@ export default function Gallery() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: PADDING_H,
-    flex: 1,
-  },
-  cardContainer: {
-    rowGap: 10,
-    paddingBottom: CARD_WIDTH + 30,
-  },
-});
