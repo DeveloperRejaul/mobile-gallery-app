@@ -1,45 +1,20 @@
-import React, { useEffect } from "react";
-import { Image, StyleSheet } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/src/core/rtk/store";
-import { fetchImage } from "@/src/features/gallery/slice/cache";
-import { checkEqual, checkEqualString } from "@/src/core/utils/redux";
-import Error from "./Error";
-import { CACHE_PATH } from "../constant/constant";
+import React from "react";
+import { StyleSheet } from "react-native";
+import FastImage from "react-native-fast-image";
 import Loading from "./Loading";
 interface ImageViewerProps {
   imageUrl: string;
 }
 export default function ImageViewer({ imageUrl }: ImageViewerProps) {
-  const dispatch = useDispatch<AppDispatch>();
-  const urlId = imageUrl.split("/").pop() as string;
-  const imageUri = useSelector(
-    (state: RootState) => state.images.images[urlId],
-    checkEqualString
-  );
-
-  useEffect(() => {
-    if (imageUri === undefined) {
-      dispatch(fetchImage(imageUrl));
-    }
-  }, []);
-
-  const status = useSelector(
-    (state: RootState) => state.images.status,
-    checkEqualString
-  );
-  const error = useSelector(
-    (state: RootState) => state.images.error,
-    checkEqual
-  );
-
-  if (status === "loading") return <Loading />;
-  if (status === "failed") return <Error error={error} />;
-
-  return imageUri ? (
-    <Image source={{ uri: CACHE_PATH + imageUri }} style={styles.img} />
-  ) : (
-    <Loading />
+  return (
+    <FastImage
+      style={styles.img}
+      source={{
+        uri: imageUrl,
+        priority: FastImage.priority.normal,
+      }}
+      resizeMode={FastImage.resizeMode.cover}
+    />
   );
 }
 

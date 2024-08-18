@@ -5,21 +5,18 @@ import ImageViewer from "./ImageViewer";
 import { CARD_WIDTH } from "@/src/core/constant/constant";
 import { colors } from "@/src/core/constant/colors";
 import CheckBall from "./CheckBall";
-
-const checkProps = (pre: IAlbumItemProps, next: IAlbumItemProps) => {
-  return pre.albumId === next.albumId;
-};
+import { checkEqual } from "@/src/core/utils/redux";
 
 export default memo((props: IAlbumItemProps) => {
   return (
     <TouchableOpacity style={styles.container} onLongPress={props.onLongPress}>
       <View style={styles.imgBody}>
-        <ImageViewer imageUrl={props.thumbnail} />
+        <ImageViewer imageUrl={props?.thumbnail} />
       </View>
       <View style={styles.footer}>
         <View>
-          <Text style={styles.text}>Total Photos: {props.total}</Text>
-          <Text style={styles.text}>Album Id: {props.albumId}</Text>
+          <Text style={styles.text}>Total Photos: {props?.total}</Text>
+          <Text style={styles.text}>Album Id: {props?.albumId}</Text>
         </View>
         <CheckBall
           isActive={props.isActive}
@@ -28,7 +25,7 @@ export default memo((props: IAlbumItemProps) => {
       </View>
     </TouchableOpacity>
   );
-}, checkProps);
+}, checkEqual);
 
 const styles = StyleSheet.create({
   imgBody: {

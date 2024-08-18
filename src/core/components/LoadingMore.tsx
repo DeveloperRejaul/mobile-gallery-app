@@ -1,6 +1,8 @@
 import { StyleSheet, View } from "react-native";
-import { CARD_WIDTH } from "../constant/constant";
+import { CARD_WIDTH, TOTAL_COL } from "../constant/constant";
 import { Skeleton } from "moti/skeleton";
+
+const Loading = new Array(TOTAL_COL).fill(0).map((_, i) => i);
 
 export default function LoadingMore() {
   const props = {
@@ -12,12 +14,11 @@ export default function LoadingMore() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.body}>
-        <Skeleton {...props} />
-      </View>
-      <View style={styles.body}>
-        <Skeleton {...props} />
-      </View>
+      {Loading.map((i) => (
+        <View key={i} style={styles.body}>
+          <Skeleton {...props} />
+        </View>
+      ))}
     </View>
   );
 }

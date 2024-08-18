@@ -8,10 +8,7 @@ import { memo } from "react";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { StackScreenType } from "../navigation/types";
 import CheckBall from "./CheckBall";
-
-const checkProps = (pre: IAllPhotosProps, next: IAllPhotosProps) => {
-  return pre.thumbnailUrl === next.thumbnailUrl;
-};
+import { checkEqual } from "@/src/core/utils/redux";
 
 export default memo((props: IAllPhotosProps) => {
   const { id, thumbnailUrl, albumId, title, url } = props;
@@ -51,7 +48,7 @@ export default memo((props: IAllPhotosProps) => {
       </Skeleton>
     </TouchableOpacity>
   );
-}, checkProps);
+}, checkEqual);
 
 const styles = StyleSheet.create({
   card: {

@@ -1,15 +1,17 @@
-import { View, FlatList, useWindowDimensions } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
-import { BASE_URL, CARD_WIDTH } from "@/src/core/constant/constant";
+import { View, FlatList } from "react-native";
+import React, { useCallback, useState } from "react";
+import { CARD_WIDTH, TOTAL_COL } from "@/src/core/constant/constant";
 import { IAppPhotosRenterProps, IParamsType, LayoutGallery } from "../types";
 import Card from "@/src/core/components/Card";
 import LoadingMore from "@/src/core/components/LoadingMore";
 import BottomBar from "@/src/core/components/BottomBar";
-import { useDeletePhotosWithIdMutation } from "@/src/core/rtk/api";
 import { styles } from "@/src/features/gallery/styles";
-import { useAppDispatch, useAppSelector } from "@/src/core/hooks/redux";
-import { checkEqual } from "@/src/core/utils/redux";
-import { addPhotos, removePhotos } from "@/src/features/gallery/slice/photos";
+import { useAppSelector } from "@/src/core/hooks/redux";
+import {
+  useDeletePhotosWithIdMutation,
+  useGetPhotosQuery,
+  useLazyGetPhotosByPageQuery,
+} from "@/src/core/rtk/api";
 
 let page = 1;
 const limit = 10;
@@ -17,35 +19,22 @@ const limit = 10;
 const selectData: number[] = [];
 
 export default function Gallery() {
-  const [isLoading, setIsLoading] = useState(false);
   const [isLongPress, setIsLongPress] = useState(false);
   const [deletePhoto] = useDeletePhotosWithIdMutation();
-  const data = useAppSelector((state) => state.photos.photos, checkEqual);
+  const { isLoading, data = [] } = useGetPhotosQuery(undefined);
+  const [getPhotosByPage, { isLoading: pageLoading }] =
+    useLazyGetPhotosByPageQuery();
 
   const isSearching = useAppSelector((state) => state.search.isSearching);
   const searchText = useAppSelector((state) => state.search.text);
   const searchType = useAppSelector((state) => state.search.type);
-
-  const dispatch = useAppDispatch();
-
-  const { width: WIDTH } = useWindowDimensions();
-  const TOTAL_COL = Math.floor(WIDTH / CARD_WIDTH + 0.8);
-
-  const fetchData = useCallback(async () => {
-    const res = await fetch(`${BASE_URL}/photos?_page=${page}&_limit=${limit}`);
-    const result = await res.json();
-    dispatch(addPhotos(result));
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const tab = useAppSelector((state) => state.search.activeTab);
 
   const handleScrollEnd = () => {
-    setIsLoading(true);
     page = page + 1;
-    if (!isLoading && !isSearching) fetchData();
+    if (!isLoading && !isSearching && tab === "photos") {
+      getPhotosByPage({ page, limit });
+    }
   };
 
   const handlePress = (id: number, isChecked: boolean) => {
@@ -55,19 +44,21 @@ export default function Gallery() {
   };
 
   const handleDelete = () => {
-    dispatch(removePhotos(selectData));
-    selectData.forEach((id) => deletePhoto(selectData[id]));
+    selectData.forEach((id) => deletePhoto(id));
     selectData.splice(0, selectData.length);
     setIsLongPress(false);
   };
 
-  const renderItem = ({ item }: IAppPhotosRenterProps) => (
-    <Card
-      onLongPress={() => setIsLongPress((pre) => !pre)}
-      isActive={isLongPress}
-      onPress={handlePress}
-      {...item}
-    />
+  const renderItem = useCallback(
+    ({ item }: IAppPhotosRenterProps) => (
+      <Card
+        onLongPress={() => setIsLongPress((pre) => !pre)}
+        isActive={isLongPress}
+        onPress={handlePress}
+        {...item}
+      />
+    ),
+    [isLongPress]
   );
 
   const keyExtractor = (item: IParamsType, index: number) => {
@@ -102,7 +93,7 @@ export default function Gallery() {
           data={newData}
           numColumns={TOTAL_COL}
           showsVerticalScrollIndicator={false}
-          columnWrapperStyle={{ columnGap: 8 }}
+          columnWrapperStyle={{ columnGap: 8, justifyContent: "space-between" }}
           keyExtractor={keyExtractor}
           onEndReached={handleScrollEnd}
           getItemLayout={getItemLayout}
@@ -110,7 +101,9 @@ export default function Gallery() {
           windowSize={2}
           initialNumToRender={15}
           removeClippedSubviews={true}
-          ListFooterComponent={isLoading ? <LoadingMore /> : null}
+          ListFooterComponent={
+            isLoading || pageLoading ? <LoadingMore /> : null
+          }
           renderItem={renderItem}
         />
       </View>

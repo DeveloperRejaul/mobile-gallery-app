@@ -6,6 +6,8 @@ import { colors } from "@/src/core/constant/colors";
 import { useAppDispatch } from "@/src/core/hooks/redux";
 import Search from "./search";
 import {
+  activeAlbum,
+  activePhotos,
   searchActive,
   searchInActive,
   setAlbumType,
@@ -16,6 +18,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useEffect } from "react";
 
 export default function TabBar(props: MaterialTopTabBarProps) {
   const { state, navigation } = props;
@@ -27,6 +30,11 @@ export default function TabBar(props: MaterialTopTabBarProps) {
   const search = useSharedValue(0);
   const bar = useSharedValue(1);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (isAlbumActive) dispatch(activeAlbum());
+    if (isAllPhotoActive) dispatch(activePhotos());
+  }, [isAllPhotoActive, isAlbumActive]);
 
   const onPress = (key: string, routeName: string) => {
     const event = navigation.emit({
