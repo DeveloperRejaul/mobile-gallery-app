@@ -2,8 +2,6 @@
 
 This is a mobile gallery app built with React Native and Expo, featuring image fetching, offline caching, lazy loading, and more. The app is optimized for both Android and iOS devices, including tablets, with a responsive layout.
 
-![demo gip](./screenshot/demo.gif)
-
 ## Project Overview
 
 | #SL | Name                     | File                                                                          | Demo        |
