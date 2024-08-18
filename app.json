@@ -26,12 +26,15 @@
       "favicon": "./src/core/assets/images/favicon.png"
     },
     "plugins": [
-       [
+      [
         "expo-screen-orientation",
         {
           "initialOrientation": "DEFAULT"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": { }
+    }
   }
 }

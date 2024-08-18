@@ -1,50 +1,77 @@
-# Welcome to your Expo app 👋
+# Welcome to the Mobile Gallery App 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is a mobile gallery app built with React Native and Expo, featuring image fetching, offline caching, lazy loading, and more. The app is optimized for both Android and iOS devices, including tablets, with a responsive layout.
+
+## Project Overview
+
+| #SL | Name                     | File    | Demo        |
+| --- | ------------------------ | ------- | ----------- |
+| 01  | React Native Gallery App | [Apk]() | [Youtube]() |
+
+## Features
+
+- **Fetch Images**: Images are fetched from JSONPlaceholder with pagination support (10 images per page).
+- **State Management**: All network requests are handled using Redux Toolkit and RTK Query, ensuring efficient state management and data caching.
+- **Optimistic and Pessimistic Updates**: The app implements both optimistic and pessimistic updates for a seamless user experience.
+- **Lazy Loading**: Images are lazily loaded as the user scrolls, optimizing performance and reducing data usage.
+- **Image Deletion**: Long-press on an image to delete it by image ID or album ID.
+- **Offline Caching**: Images are cached for offline access, allowing users to view previously loaded images without an internet connection.
+- **Search Functionality**: Users can search for specific images within the gallery.
+- **Responsive Layout**: The app uses Flexbox for a responsive layout, ensuring a consistent experience across mobile phones and tablets.
+- **Cross-Platform**: Available on both Android and iOS platforms.
+
+## Technologies Used
+
+- **React Native**
+- **Expo**
+- **Redux Toolkit**
+- **RTK Query**
+
+## How to Use
+
+- **Fetching Images**: The app automatically fetches and displays images when opened. Scroll down to load more images.
+- **Deleting Images**: Long-press on an image to delete it. You can delete by either image ID or album ID.
+- **Searching**: Use the search bar to find specific images in the gallery.
 
 ## Get started
 
 1. Install dependencies
 
    ```bash
-   npm install
+   git clone https://github.com/DeveloperRejaul/mobile-gallery-app.git
+   cd mobile-gallery-app
+   npm install or yarn
    ```
 
 2. Start the app
 
    ```bash
-    npx expo start
+   npm run prebuild  or yarn prebuild
+
+   // run on android
+   npm run android or yarn android
+
+   // run on ios
+   npm run ios or yarn ios
+
    ```
 
-In the output, you'll find options to open the app in a
+## Demo of Gallery App Mobile
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+<p>
+<img src='./screenshot/mobile_1.png' height="400"/>
+<img src='./screenshot/mobile_2.png' height="400"/>
+<img src='./screenshot/mobile_3.png' height="400"/>
+<img src='./screenshot/mobile_4.png' height="400"/>
+<img src='./screenshot/mobile_5.png' height="400"/>
+</p>
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Demo of Gallery App tablet
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+<p>
+<img src='./screenshot/tab_1.png' height="400"/>
+<img src='./screenshot/tab_2.png' height="400"/>
+<img src='./screenshot/tab_3.png' height="400"/>
+<img src='./screenshot/tab_4.png' height="400"/>
+<img src='./screenshot/tab_5.png' height="400"/>
+</p>
